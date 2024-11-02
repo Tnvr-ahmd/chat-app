@@ -3,7 +3,7 @@ const express=require('express')
 const app=express()
 const http=require('http')
 const cors=require('cors')
-app.use(cors())
+app.use(cors(["http://localhost:3000/","https://chat-app-seven-henna-32.vercel.app/"]))
 const server=http.createServer(app)
 const io=new Server(server
     // ,{
