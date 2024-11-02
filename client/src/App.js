@@ -8,7 +8,7 @@ function App() {
   const [room, setRoom] = useState("");
   const [message, setMessage] = useState("");
   const [msgList, setMsgList] = useState(
-    ["Hi", "Welcome to the chat!"]
+    ["Hi", "Welcome to the chat!!!"]
   //   () => {
   //   const savedMessages = localStorage.getItem('messages');
   //   return savedMessages ? JSON.parse(savedMessages) : ["Hi", "Welcome to the chat!"];
