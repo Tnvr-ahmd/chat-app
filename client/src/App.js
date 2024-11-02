@@ -7,10 +7,13 @@ const socket = io.connect('https://chat-app-server-udpw.onrender.com');
 function App() {
   const [room, setRoom] = useState("");
   const [message, setMessage] = useState("");
-  const [msgList, setMsgList] = useState(() => {
-    const savedMessages = localStorage.getItem('messages');
-    return savedMessages ? JSON.parse(savedMessages) : ["Hi", "Welcome to the chat!"];
-  });
+  const [msgList, setMsgList] = useState(
+    ["Hi", "Welcome to the chat!"]
+  //   () => {
+  //   const savedMessages = localStorage.getItem('messages');
+  //   return savedMessages ? JSON.parse(savedMessages) : ["Hi", "Welcome to the chat!"];
+  // }
+);
 
   const chatBoxRef = useRef(null);
 
@@ -35,7 +38,7 @@ function App() {
   useEffect(() => {
     // Set up listener for incoming messages only once
     socket.on("rmsg", (data) => {
-      setMsgList((prevList) => [...prevList, data.msg]);
+      setMsgList(() => [...msgList, data.msg]);
     });
 
     // Clean up the listener on component unmount
