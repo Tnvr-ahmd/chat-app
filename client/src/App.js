@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 import { useEffect, useState, useRef } from 'react';
 
 //const socket = io.connect('https://your-app-name.onrender.com');
-const socket = io.connect('http://localhost:3001');
+const socket = io.connect('https://chat-app-server-udpw.onrender.com');
 
 function App() {
   const [room, setRoom] = useState("");
@@ -27,11 +27,11 @@ function App() {
 
   useEffect(() => {
     socket.on("loadMessages", (messages) => {
-      setMsgList(messages.map((m) => `${m.id}: ${m.msg}`));
+      setMsgList(messages.map((m) => m.msg));
     });
 
     socket.on("rmsg", (data) => {
-      setMsgList((prevList) => [...prevList, `${data.id}: ${data.msg}`]);
+      setMsgList((prevList) => [...prevList, data.msg]);
     });
 
     return () => {

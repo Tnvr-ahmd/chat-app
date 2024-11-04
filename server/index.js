@@ -1,6 +1,6 @@
 const io = require("socket.io")(3001, {
     cors: {
-      origin: "http://localhost:3000", // Make sure this matches your frontend origin
+      origin: ["http://localhost:3000"],
       methods: ["GET", "POST"]
     }
   });
@@ -21,10 +21,10 @@ const io = require("socket.io")(3001, {
           const { room, msg } = data;
           if (room) {
               // Send to all clients in the specified room
-              io.to(room).emit("rmsg", { id: socket.id, msg });
+              io.to(room).emit("rmsg", {  msg });
           } else {
               // Broadcast to all clients if no room is specified
-              socket.broadcast.emit("rmsg", { id: socket.id, msg });
+              socket.broadcast.emit("rmsg", {  msg });
           }
       });
   });
