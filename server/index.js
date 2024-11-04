@@ -1,32 +1,31 @@
-const {Server}=require('socket.io')
-const express=require('express')
-const app=express()
-const http=require('http')
-const cors=require('cors')
-app.use(cors(["http://localhost:3000/","https://chat-app-seven-henna-32.vercel.app/"]))
-const server=http.createServer(app)
-const io=new Server(server
-    // ,{
-    // cors:{
-    //     origin:["http://localhost:3000/","https://chat-app-seven-henna-32.vercel.app/"],
-    //     methods:["GET","POST"],
-    // },}
-)
-io.on("connection",(socket)=>{
-    console.log(socket.id)
-    socket.on("jn",(data)=>{
-        if(data){
-        socket.join(data)
-        console.log(`User ${socket.id} joined room: ${data}`);}
-    })
-        socket.on("sendmsg",({msg,room})=>{
-            if (room){
-            console.log(`User ${socket.id} joined room: ${room}`);
-            socket.to(room).emit("rmsg",{msg})
-            }else{
-                socket.emit("rmsg",{msg})
-            }
-        })
-    
-})
-server.listen(3001,()=>{console.log("server is running on 3001")})
+const io = require("socket.io")(3001, {
+    cors: {
+      origin: "http://localhost:3000", // Make sure this matches your frontend origin
+      methods: ["GET", "POST"]
+    }
+  });
+  
+  io.on("connection", (socket) => {
+      console.log("User connected with socket ID: " + socket.id);
+  
+      // Listen for joining rooms
+      socket.on("jn", (room) => {
+          if (room) {
+              socket.join(room);
+              console.log(`User ${socket.id} joined room: ${room}`);
+          }
+      });
+  
+      // Listen for sending messages
+      socket.on("sendmsg", (data) => {
+          const { room, msg } = data;
+          if (room) {
+              // Send to all clients in the specified room
+              io.to(room).emit("rmsg", { id: socket.id, msg });
+          } else {
+              // Broadcast to all clients if no room is specified
+              socket.broadcast.emit("rmsg", { id: socket.id, msg });
+          }
+      });
+  });
+  
