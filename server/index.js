@@ -1,6 +1,6 @@
 const io = require("socket.io")(3001, {
     cors: {
-      origin: ["http://localhost:3000"],
+      origin: ["http://localhost:3000","https://chatapp-tnvr.vercel.app"],
       methods: ["GET", "POST"]
     }
   });
