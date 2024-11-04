@@ -2,20 +2,27 @@ import './App.css';
 import io from 'socket.io-client';
 import { useEffect, useState, useRef } from 'react';
 
-//const socket = io.connect('https://your-app-name.onrender.com');
 const socket = io.connect('http://localhost:3001');
 
 function App() {
   const [room, setRoom] = useState("");
   const [message, setMessage] = useState("");
-  const [msgList, setMsgList] = useState([]);
+  const [msgList, setMsgList] = useState(() => {
+    const savedMessages = localStorage.getItem('messages');
+    return savedMessages ? JSON.parse(savedMessages) : ["Hi", "Welcome to the chat!"];
+  });
 
   const chatBoxRef = useRef(null);
+
+  // Update localStorage whenever msgList changes
+  useEffect(() => {
+    localStorage.setItem('messages', JSON.stringify(msgList));
+  }, [msgList]);
 
   const sendMsg = () => {
     if (message.trim()) {
       socket.emit("sendmsg", { msg: message, room });
-      setMessage("");
+      setMessage("");  // Clear message input after sending
     }
   };
 
@@ -26,20 +33,16 @@ function App() {
   };
 
   useEffect(() => {
-    socket.on("loadMessages", (messages) => {
-      setMsgList(messages.map((m) => `${m.id}: ${m.msg}`));
-    });
-
+    // Set up listener for incoming messages only once
     socket.on("rmsg", (data) => {
-      setMsgList((prevList) => [...prevList, `${data.id}: ${data.msg}`]);
+      setMsgList((prevList) => [...prevList, data.msg]);
     });
 
-    return () => {
-      socket.off("loadMessages");
-      socket.off("rmsg");
-    };
+    // Clean up the listener on component unmount
+    return () => socket.off("rmsg");
   }, []);
 
+  // Scroll to the latest message whenever msgList changes
   useEffect(() => {
     if (chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
